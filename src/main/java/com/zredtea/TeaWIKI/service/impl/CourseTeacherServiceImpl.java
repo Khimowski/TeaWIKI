@@ -14,6 +14,7 @@ import com.zredtea.TeaWIKI.mapper.TeacherMapper;
 import com.zredtea.TeaWIKI.service.CourseService;
 import com.zredtea.TeaWIKI.service.CourseTeacherService;
 import com.zredtea.TeaWIKI.service.TeacherService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,11 +23,13 @@ import java.util.List;
 @Service
 public class CourseTeacherServiceImpl extends ServiceImpl<CourseTeacherMapper, CourseTeacher>
                                       implements CourseTeacherService {
-
+    @Autowired
     private CourseTeacherMapper courseTeacherMapper;
 
+    @Autowired
     private TeacherMapper teacherMapper;
 
+    @Autowired
     private CourseMapper courseMapper;
 
     @Override
@@ -51,6 +54,7 @@ public class CourseTeacherServiceImpl extends ServiceImpl<CourseTeacherMapper, C
 
     @Override
     public List<Teacher> getTeachersByCourseId(Integer courseId) {
+        courseTeacherMapper = getBaseMapper();
         List<CourseTeacher> CTConnects = courseTeacherMapper.selectAllByCourseId(courseId);
         List<Teacher> teachers = new ArrayList<>();
         for(CourseTeacher entity : CTConnects) {

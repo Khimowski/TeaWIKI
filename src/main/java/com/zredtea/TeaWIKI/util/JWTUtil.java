@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -15,9 +16,10 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 public class JWTUtil {
-    @Value("${jwt.secret:defaultSecretKey}")
+    @Value("${jwt.secret}")
     private String secretKey;
 
     @Getter
@@ -31,7 +33,15 @@ public class JWTUtil {
     }
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        if(keyBytes.length < 32) {
+            SecretKey secretKey = Jwts.SIG.HS256.key().build();
+            this.secretKey = secretKey.toString();
+            return secretKey;
+        }
+        else {
+            return Keys.hmacShaKeyFor(keyBytes);
+        }
     }
 
     public String generateToken(Integer userId, String username) {
@@ -78,20 +88,21 @@ public class JWTUtil {
                     .parseSignedClaims(token);
 
             String redisKey = "USER_TOKEN" + getUserIdFromToken(token);
-            String redisToken =  (String) redisTemplate.opsForValue().get(redisKey);
+            String redisToken = (String) redisTemplate.opsForValue().get(redisKey);
 
             return token.equals(redisToken);
         } catch (Exception e){
+            log.debug(e.getMessage());
             return false;
         }
     }
 
-    public void invalidateToken(String token) {
+    public void invalidateToken(Integer userId) {
         try {
-            String redisKey = "USER_TOKEN" + getUserIdFromToken(token);
+            String redisKey = "USER_TOKEN" + userId;
             redisTemplate.delete(redisKey);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage());
         }
     }
 }

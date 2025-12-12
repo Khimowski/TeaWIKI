@@ -15,9 +15,6 @@ import com.zredtea.TeaWIKI.mapper.CommentVoteMapper;
 import com.zredtea.TeaWIKI.mapper.TeacherMapper;
 import com.zredtea.TeaWIKI.mapper.UserMapper;
 import com.zredtea.TeaWIKI.service.CommentService;
-import com.zredtea.TeaWIKI.service.CommentVoteService;
-import com.zredtea.TeaWIKI.service.TeacherService;
-import com.zredtea.TeaWIKI.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +59,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
     public boolean deleteComment(Integer commentId, Integer userId) {
         Comment comment = getById(commentId);
         comment.setDeleted(1);
-        boolean success = save(comment);
+        boolean success = updateById(comment);
         if(!success) {
             throw new ServerException(ExceptionEnum.DATABASE_ERROR);
         }
@@ -156,9 +153,12 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         dto.setLikes(commentVoteMapper.countLikesByCommentId(comment.getCommentId()));
         dto.setDislikes(commentVoteMapper.countDislikesByCommentId(comment.getCommentId()));
 
+        dto.setCommentTime(comment.getCommentTime());
+        dto.setUpdatedAt(comment.getUpdatedAt());
+
         User conUser = userMapper.selectById(comment.getUserId());
         Teacher conTeacher = teacherMapper.selectById(comment.getTeacherId());
-        dto.setUserName(conUser.getNickname());
+        dto.setUsername(conUser.getNickname());
         dto.setUserAvatar(conUser.getAvatar());
 
         dto.setTeacherName(conTeacher.getTeacherName());

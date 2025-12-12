@@ -62,15 +62,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public UserDTO logout(String token) {
-        Integer userId = jwtUtil.getUserIdFromToken(token);
+    public UserDTO logout(Integer userId) {
         if (userId == null) {
             throw new BusinessException(ExceptionEnum.USER_NOT_FOUND);
         }
-        if (jwtUtil.validateToken(token)) {
-            throw new AuthException(ExceptionEnum.TOKEN_NOT_EQUAL);
-        }
-        jwtUtil.invalidateToken(token);
+        jwtUtil.invalidateToken(userId);
         return new UserDTO();
     }
 
@@ -91,8 +87,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         UserMapper userMapper = getBaseMapper();
         User user = userMapper.selectById(userId);
         user.setNickname(nickname);
-        int success = userMapper.updateById(user);
-        if(success <= 0) {
+        boolean success = updateById(user);
+        if(!success) {
             throw new ServerException(ExceptionEnum.DATABASE_ERROR);
         }
         return convertToDTO(user);
@@ -105,6 +101,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setAvatar(avatar);
         int success = userMapper.updateById(user);
         if(success <= 0) {
+            throw new ServerException(ExceptionEnum.DATABASE_ERROR);
+        }
+        return convertToDTO(user);
+    }
+
+    @Override
+    public UserDTO updateDepartment(Integer userId, String department) {
+        UserMapper userMapper = getBaseMapper();
+        User user = userMapper.selectById(userId);
+        user.setDepartment(department);
+        boolean success = updateById(user);
+        if(!success) {
             throw new ServerException(ExceptionEnum.DATABASE_ERROR);
         }
         return convertToDTO(user);

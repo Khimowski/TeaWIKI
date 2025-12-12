@@ -89,11 +89,15 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper,Teacher>
         teacherDTO.setTeacherName(teacher.getTeacherName());
         // 处理评分统计业务逻辑
         List<Comment> comments = commentMapper.selectCommentsByTeacherId(teacher.getTeacherId(),null);
-        Double rating = 0.0D;
-        for(Comment comment : comments) {
-            rating += comment.getRating();
+        if(comments.size() > 0) {
+            Double rating = 0.0D;
+            for(Comment comment : comments) {
+                rating += comment.getRating();
+            }
+            teacherDTO.setRating(rating / comments.size());
+        }else {
+            teacherDTO.setRating(5.00);
         }
-        teacherDTO.setRating(rating / comments.size());
         teacherDTO.setDepartment(teacher.getDepartment());
         teacherDTO.setCreatedAt(teacher.getCreatedAt());
         teacherDTO.setUpdatedAt(teacher.getUpdatedAt());

@@ -30,6 +30,7 @@ public class CommentVoteServiceImpl extends ServiceImpl<CommentVoteMapper, Comme
 
     @Override
     public boolean cancelVote(Integer userId, Integer commentId) {
+        CommentVoteMapper commentVoteMapper = getBaseMapper();
         CommentVote commentVote = commentVoteMapper.selectCommentVoteByUnionId(userId, commentId);
         if(commentVote == null) {
             throw new BusinessException(ExceptionEnum.CVOTE_NOT_FOUND);
@@ -43,6 +44,7 @@ public class CommentVoteServiceImpl extends ServiceImpl<CommentVoteMapper, Comme
 
     @Override
     public boolean toggleVote(Integer userId, Integer commentId) {
+        CommentVoteMapper commentVoteMapper = getBaseMapper();
         CommentVote commentVote = commentVoteMapper.selectCommentVoteByUnionId(userId, commentId);
         if(commentVote == null) {
             throw new BusinessException(ExceptionEnum.CVOTE_NOT_FOUND);

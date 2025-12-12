@@ -16,7 +16,7 @@ public interface UserService extends IService<User> {
 
     AuthDTO login(UserLoginDTO dto);
 
-    UserDTO logout(String token);
+    UserDTO logout(Integer userId);
 
     UserDTO getUserInfo(String username);
 
@@ -25,6 +25,8 @@ public interface UserService extends IService<User> {
     UserDTO updateNickname(Integer userId, String nickname);
 
     UserDTO updateAvatar(Integer userId, String avatar);
+
+    UserDTO updateDepartment(Integer userId, String department);
 
     UserDTO updatePassword(Integer userId, UserPasswordUpdateDTO dto);
 

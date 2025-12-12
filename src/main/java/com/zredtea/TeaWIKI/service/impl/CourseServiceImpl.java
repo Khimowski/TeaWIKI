@@ -12,7 +12,7 @@ import com.zredtea.TeaWIKI.entity.CourseTeacher;
 import com.zredtea.TeaWIKI.mapper.CourseMapper;
 import com.zredtea.TeaWIKI.mapper.CourseTeacherMapper;
 import com.zredtea.TeaWIKI.service.CourseService;
-import com.zredtea.TeaWIKI.service.CourseTeacherService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,8 +21,10 @@ import java.util.List;
 @Service
 public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
                                implements CourseService {
+    @Autowired
     private CourseMapper courseMapper;
 
+    @Autowired
     private CourseTeacherMapper courseTeacherMapper;
 
     @Override
@@ -57,24 +59,29 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
 
     @Override
     public CourseDTO getCourseById(Integer courseId) {
+        courseMapper = getBaseMapper();
         Course course = courseMapper.selectById(courseId);
         return convertToDTO(course);
     }
 
     @Override
     public CourseDTO getCourseByName(String courseName) {
+        courseMapper = getBaseMapper();
         Course course = courseMapper.selectByName(courseName);
         return convertToDTO(course);
     }
 
     @Override
     public List<CourseDTO> matchCourseByName(String courseName) {
+        courseMapper = getBaseMapper();
         List<Course> courses = courseMapper.matchByName(courseName);
         return convertToDTO(courses);
     }
 
     @Override
     public List<CourseDTO> getCourseByTeacherId(Integer teacherId) {
+        courseMapper = getBaseMapper();
+
         List<CourseTeacher> courseTeachers = courseTeacherMapper.selectAllByTeacherId(teacherId);
         List<Course> courses = new ArrayList<>();
         for (CourseTeacher courseTeacher : courseTeachers) {
@@ -86,6 +93,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
 
     @Override
     public List<CourseDTO> getAllCourses() {
+        courseMapper = getBaseMapper();
         List<Course> courses = courseMapper.selectAllCourses();
         return convertToDTO(courses);
     }
